@@ -1,18 +1,19 @@
-import java.time.LocalDate;
-
 public class Demanda {
-    public String nome;
-    public int prioridade;
-    public double distanciaEquipeSede;
-    public double distanciaSedeLocal;
-    public double distanciaTotal;
-    public double custoReparo;
-    public double prejuizoFiscal;
-    public LocalDate tempoDeEspera;
+    private int id;
+    private String nome;
+    private ClasseDeProblema classeDeProblema;
+    private double distanciaSede;
+    private double distanciaVeiculo;
+    private double custoPecas;
+    private double custoMaoDeObra;
+    private double custoPorHoraParada;
+    private double custoEquipamentos;
+    private int recorrenciaChamadas;
+    private String regiao;
+    private double consumoMedio;
     public double score;
 
-    public Demanda(String nome, double distanciaSedeLocal) {
+    public Demanda(String nome) {
         this.nome = nome;
-        this.distanciaSedeLocal = distanciaSedeLocal;
     }
 }
