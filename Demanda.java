@@ -1,19 +1,18 @@
+import java.time.LocalDate;
+
 public class Demanda {
-    private int id;
-    private String nome;
-    private ClasseDeProblema classeDeProblema;
-    private double distanciaSede;
-    private double distanciaVeiculo;
-    private double custoPecas;
-    private double custoMaoDeObra;
-    private double custoPorHoraParada;
-    private double custoEquipamentos;
-    private int recorrenciaChamadas;
-    private String regiao;
-    private double consumoMedio;
+    public String nome;
+    public int prioridade;
+    public double distanciaEquipeSede;
+    public double distanciaSedeLocal;
+    public double distanciaTotal;
+    public double custoReparo;
+    public double prejuizoFiscal;
+    public String tempoDeEspera; // agora é String no formato "DD/MM/AAAA"
     public double score;
 
-    public Demanda(String nome) {
+    public Demanda(String nome, double distanciaSedeLocal) {
         this.nome = nome;
+        this.distanciaSedeLocal = distanciaSedeLocal;
     }
 }
