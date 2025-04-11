@@ -5,7 +5,7 @@ public class BubbleSort {
         for (int i = 1; i < demandas.size(); i++) {
             boolean trocou = false;
             for (int j = 0; j < demandas.size() - i; j++) {
-                if (demandas.get(j).score > demandas.get(j + 1).score) {
+                if (demandas.get(j).score < demandas.get(j + 1).score) { // ordem decrescente
                     Demanda temp = demandas.get(j);
                     demandas.set(j, demandas.get(j + 1));
                     demandas.set(j + 1, temp);

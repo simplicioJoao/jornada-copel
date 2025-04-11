@@ -1,92 +1,95 @@
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.sql.SQLException;
 
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         ArrayList<Demanda> demandas = new ArrayList<>();
 
-        int opcaoPrincipal;
+        int opcao;
         do {
-            System.out.println("----- Menu Principal -----");
-            System.out.println("1 - Listar Funcionários");
-            System.out.println("2 - Nova Demanda");
-            System.out.println("3 - Inserir Funcionário");  // <- NOVO
-            System.out.println("4 - Sair");
-
-            opcaoPrincipal = Integer.parseInt(scanner.nextLine());
-
-            switch (opcaoPrincipal) {
-                case 1: {
-                    try {
-                        ListarFuncionarios.listarFuncionarios();
-                    } catch (Exception e) {
-                        System.out.println("Erro ao exibir lista de funcionários: " + e.getMessage());
-                    }
-                    break;
-                }
-                case 2: {
-                    exibirSubMenuInserirDemanda(scanner, demandas);
-                    break;
-                }
-                case 3: {
-                    InserirFuncionario.inserirFuncionario();
-                    break;
-                }
-                case 4: {
-                    System.out.println("Encerrando o sistema...");
-                    break;
-                }
-
-            }
-        } while (opcaoPrincipal != 3);
-    }
-
-    // Submenu para "Inserir nova demanda"
-    public static void exibirSubMenuInserirDemanda(Scanner scanner, ArrayList<Demanda> demandas) {
-        int opcaoSubMenu;
-        do {
-            System.out.println("----- Menu de Inserção de Demanda -----");
-            System.out.println("1 - Troca");
-            System.out.println("2 - Manutenção");
-            System.out.println("3 - Visita");
-            System.out.println("4 - Incluir Demanda");
-            System.out.println("5 - Voltar ao menu principal");
+            System.out.println("\n---- Menu Principal ----");
+            System.out.println("1 - Inserir nova demanda");
+            System.out.println("2 - Listar demandas ordenadas por score");
+            System.out.println("3 - Sair");
             System.out.print("Escolha uma opção: ");
-            opcaoSubMenu = Integer.parseInt(scanner.nextLine());
+            opcao = Integer.parseInt(scanner.nextLine());
 
-            switch (opcaoSubMenu) {
+            switch (opcao) {
                 case 1:
-                    System.out.println("Inserindo uma demanda de tipo 'Troca'...");
-                    break;
-                case 2:
-                    System.out.println("Inserindo uma demanda de tipo 'Manutenção'...");
-                    break;
-                case 3:
-                    System.out.println("Inserindo uma demanda de tipo 'Visita'...");
-                    break;
-                case 4:
                     inserirDemanda(scanner, demandas);
                     break;
-                case 5:
-                    System.out.println("Voltando ao menu principal...");
+                case 2:
+                    BubbleSort.bubbleSort(demandas);
+                    System.out.println("Demandas ordenadas por score:");
+                    for (Demanda d : demandas) {
+                        System.out.println(d);
+                    }
+                    break;
+                case 3:
+                    System.out.println("Saindo...");
                     break;
                 default:
-                    System.out.println("Opção inválida, tente novamente.");
+                    System.out.println("Opção inválida.");
             }
-        } while (opcaoSubMenu != 5);
+        } while (opcao != 3);
+
+        scanner.close();
     }
 
-    public static void inserirDemanda(Scanner scanner, ArrayList<Demanda> demandas) {
-        System.out.print("Digite o nome da demanda: ");
+    private static void inserirDemanda(Scanner scanner, ArrayList<Demanda> demandas) {
+        System.out.print("Nome da demanda: ");
         String nome = scanner.nextLine();
 
-        System.out.print("Informe a distância entre a sede e o local da chamada: ");
-        double distanciaSedeLocal = Double.parseDouble(scanner.nextLine());
+        System.out.println("Escolha o cenário do problema:");
+        System.out.println("1 - Emergencial");
+        System.out.println("2 - Crítico");
+        System.out.println("3 - Urgente");
+        System.out.println("4 - Moderado");
+        System.out.println("5 - Normal");
+        int tipo = Integer.parseInt(scanner.nextLine());
+        ClasseDeProblema problema = switch (tipo) {
+            case 1 -> ClasseDeProblema.EMERGENCIAL;
+            case 2 -> ClasseDeProblema.CRITICO;
+            case 3 -> ClasseDeProblema.URGENTE;
+            case 4 -> ClasseDeProblema.MODERADO;
+            case 5 -> ClasseDeProblema.NORMAL;
+            default -> ClasseDeProblema.NORMAL;
+        };
 
-        Demanda demanda = new Demanda(nome, distanciaSedeLocal);
+        System.out.print("Distância da sede: ");
+        double distanciaSede = Double.parseDouble(scanner.nextLine());
+
+        System.out.print("Distância do veículo: ");
+        double distanciaVeiculo = Double.parseDouble(scanner.nextLine());
+
+        System.out.print("Custo de peças (R$): ");
+        double custoPecas = Double.parseDouble(scanner.nextLine());
+
+        System.out.print("Custo de mão de obra (R$): ");
+        double custoMaoDeObra = Double.parseDouble(scanner.nextLine());
+
+        System.out.print("Custo por hora parada (R$/h): ");
+        double custoHoraParada = Double.parseDouble(scanner.nextLine());
+
+        System.out.print("Custo de equipamentos (R$): ");
+        double custoEquipamentos = Double.parseDouble(scanner.nextLine());
+
+        System.out.print("Recorrência de chamadas: ");
+        int recorrencia = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("Região (Centro, Bairro, Rural): ");
+        String regiao = scanner.nextLine();
+
+        System.out.print("Consumo médio da região (GW/h): ");
+        double consumoMedio = Double.parseDouble(scanner.nextLine());
+
+        System.out.print("Score manual adicional: ");
+        double scoreManual = Double.parseDouble(scanner.nextLine());
+
+        Demanda demanda = new Demanda(nome, problema, distanciaSede, distanciaVeiculo, custoPecas, custoMaoDeObra, custoHoraParada, custoEquipamentos, recorrencia, regiao, consumoMedio, scoreManual);
+
         demandas.add(demanda);
-        System.out.println("Demanda inserida com sucesso: " + nome + " (Distância: " + distanciaSedeLocal + " km)");
+        System.out.println("Demanda registrada com sucesso!");
     }
 }
