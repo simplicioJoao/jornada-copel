@@ -11,7 +11,9 @@ public class Main {
             System.out.println("\n---- Menu Principal ----");
             System.out.println("1 - Inserir nova demanda");
             System.out.println("2 - Listar demandas ordenadas por score");
-            System.out.println("3 - Sair");
+            System.out.println("3 - Editar score de uma demanda manualmente");
+            System.out.println("4 - Fazer novo chamado para uma demanda existente");
+            System.out.println("5 - Sair");
             System.out.print("Escolha uma opção: ");
             opcao = Integer.parseInt(scanner.nextLine());
 
@@ -23,10 +25,10 @@ public class Main {
                     BubbleSort.bubbleSort(demandas);
                     System.out.println("Demandas ordenadas por score:");
                     for (Demanda d : demandas) {
-                        System.out.println(d);
+                        System.out.println(d.getDemanda());
                     }
                     break;
-                case 3:
+                case 5:
                     System.out.println("Saindo...");
                     break;
                 default:
@@ -41,20 +43,21 @@ public class Main {
         System.out.print("Nome da demanda: ");
         String nome = scanner.nextLine();
 
-        System.out.println("Escolha o cenário do problema:");
-        System.out.println("1 - Emergencial");
-        System.out.println("2 - Crítico");
-        System.out.println("3 - Urgente");
-        System.out.println("4 - Moderado");
-        System.out.println("5 - Normal");
+        System.out.println("Escolha o tipo de problema:");
+        System.out.println("1 - Troca de Transformador");
+        System.out.println("2 - Troca de Fiação");
+        System.out.println("3 - Queda de Energia");
+        System.out.println("4 - Curto-circuito");
+        System.out.println("5 - Instalação de Novo Ponto");
+
         int tipo = Integer.parseInt(scanner.nextLine());
         ClasseDeProblema problema = switch (tipo) {
-            case 1 -> ClasseDeProblema.EMERGENCIAL;
-            case 2 -> ClasseDeProblema.CRITICO;
-            case 3 -> ClasseDeProblema.URGENTE;
-            case 4 -> ClasseDeProblema.MODERADO;
-            case 5 -> ClasseDeProblema.NORMAL;
-            default -> ClasseDeProblema.NORMAL;
+            case 1 -> ClasseDeProblema.TROCA_TRANSFORMADOR;
+            case 2 -> ClasseDeProblema.TROCA_FIACAO;
+            case 3 -> ClasseDeProblema.QUEDA_ENERGIA;
+            case 4 -> ClasseDeProblema.CURTO_CIRCUITO;
+            case 5 -> ClasseDeProblema.INSTALACAO_PONTO;
+            default -> ClasseDeProblema.INSTALACAO_PONTO;
         };
 
         System.out.print("Distância da sede: ");
@@ -75,19 +78,13 @@ public class Main {
         System.out.print("Custo de equipamentos (R$): ");
         double custoEquipamentos = Double.parseDouble(scanner.nextLine());
 
-        System.out.print("Recorrência de chamadas: ");
-        int recorrencia = Integer.parseInt(scanner.nextLine());
-
         System.out.print("Região (Centro, Bairro, Rural): ");
         String regiao = scanner.nextLine();
 
         System.out.print("Consumo médio da região (GW/h): ");
         double consumoMedio = Double.parseDouble(scanner.nextLine());
 
-        System.out.print("Score manual adicional: ");
-        double scoreManual = Double.parseDouble(scanner.nextLine());
-
-        Demanda demanda = new Demanda(nome, problema, distanciaSede, distanciaVeiculo, custoPecas, custoMaoDeObra, custoHoraParada, custoEquipamentos, recorrencia, regiao, consumoMedio, scoreManual);
+        Demanda demanda = new Demanda(nome, problema, distanciaSede, distanciaVeiculo, custoPecas, custoMaoDeObra, custoHoraParada, custoEquipamentos, regiao, consumoMedio);
 
         demandas.add(demanda);
         System.out.println("Demanda registrada com sucesso!");

@@ -10,12 +10,10 @@ public class Demanda {
     public int recorrencia;
     public String regiao;
     public double consumoMedio;
-    public double entradaManual;
     public double score;
 
     public Demanda(String nome, ClasseDeProblema classeProblema, double distanciaSede, double distanciaVeiculo,
-                   double custoPecas, double custoMaoDeObra, double custoPorHoraParada, double custoEquipamentos,
-                   int recorrencia, String regiao, double consumoMedio, double entradaManual) {
+                   double custoPecas, double custoMaoDeObra, double custoPorHoraParada, double custoEquipamentos, String regiao, double consumoMedio) {
 
         this.nome = nome;
         this.classeProblema = classeProblema;
@@ -25,10 +23,9 @@ public class Demanda {
         this.custoMaoDeObra = custoMaoDeObra;
         this.custoPorHoraParada = custoPorHoraParada;
         this.custoEquipamentos = custoEquipamentos;
-        this.recorrencia = recorrencia;
+        this.recorrencia = 1;
         this.regiao = regiao;
         this.consumoMedio = consumoMedio;
-        this.entradaManual = entradaManual;
 
         calcularScore();
     }
@@ -38,17 +35,11 @@ public class Demanda {
         double distanciaTotal = distanciaSede + distanciaVeiculo;
         double pesoRegiao = regiao.equalsIgnoreCase("Rural") ? 1.2 : (regiao.equalsIgnoreCase("Bairro") ? 1.1 : 1.0);
 
-        this.score = (
-                (consumoMedio * 0.4) +
-                        (recorrencia * 10) +
-                        (entradaManual * 2) +
-                        (custoTotal * 0.2) -
-                        (distanciaTotal * 0.1)
-        ) * pesoRegiao * classeProblema.getFator();
+        this.score = (consumoMedio * 0.4 + recorrencia * 10 + custoTotal * 0.2 - distanciaTotal * 0.1) * pesoRegiao * classeProblema.getFator();
     }
 
-    public String getResumo() {
-        return String.format("Demanda: %s | Score: %.2f | Classe: %s | Região: %s",
+    public String getDemanda() {
+        return String.format("Demanda: %s | Score: %.2f | Tipo: %s | Região: %s",
                 nome, score, classeProblema.getNome(), regiao);
     }
 }
