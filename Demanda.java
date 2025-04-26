@@ -39,8 +39,16 @@ public class Demanda {
         this.score = (consumoMedio * 0.4 + recorrencia * 10 + custoTotal * 0.2 - distanciaTotal * 0.1) * pesoRegiao * classeProblema.getPeso();
     }
 
+    public int getId() {
+        return id;
+    }
+
     public double getScore() {
         return score;
+    }
+
+    public void setScore(double score) {
+        this.score = score;
     }
 
     public String getDemanda() {

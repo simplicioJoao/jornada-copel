@@ -18,23 +18,48 @@ public class Main {
             opcao = Integer.parseInt(scanner.nextLine());
 
             switch (opcao) {
-                case 1:
+                case 1: {
                     inserirDemanda(scanner, demandas);
                     break;
-                case 2:
+                }
+                case 2: {
                     BubbleSort.bubbleSort(demandas);
                     System.out.println("Demandas ordenadas por score:");
                     for (Demanda d : demandas) {
                         System.out.println(d.getDemanda());
                     }
                     break;
-                case 5:
+                }
+                case 3: {
+                    System.out.println("Informe o id da demanda: ");
+                    int id = Integer.parseInt(scanner.nextLine());
+
+                    Demanda demanda = buscarDemanda(demandas, id);
+                    if(demanda != null) {
+                        System.out.println("Informe o novo score da demanda de id " + id + ": ");
+                        double score = Double.parseDouble(scanner.nextLine());
+                        demanda.setScore(score);
+
+                        System.out.println("Score atualizado de forma manual com sucesso!");
+                        demanda.getDemanda();
+                    } else {
+                        System.out.println("Demanda com id " + id + " não localizada no sistema.");
+                    }
+                    break;
+                }
+                case 4: {
+
+                }
+                case 5: {
                     System.out.println("Saindo...");
                     break;
-                default:
+                }
+                default: {
                     System.out.println("Opção inválida.");
+                    break;
+                }
             }
-        } while (opcao != 3);
+        } while (opcao != 5);
 
         scanner.close();
     }
@@ -88,5 +113,14 @@ public class Main {
 
         demandas.add(demanda);
         System.out.println("Demanda registrada com sucesso!");
+    }
+
+    private static Demanda buscarDemanda(ArrayList<Demanda> demandas, int id) {
+        for(Demanda demanda : demandas) {
+            if(demanda.getId() == id) {
+                return demanda;
+            }
+        }
+        return null;
     }
 }
