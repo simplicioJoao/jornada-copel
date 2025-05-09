@@ -48,7 +48,17 @@ public class Main {
                     break;
                 }
                 case 4: {
+                    System.out.println("Informe o id da demanda: ");
+                    int id = Integer.parseInt(scanner.nextLine());
 
+                    Demanda demanda = buscarDemanda(demandas, id);
+                    if(demanda != null) {
+                        demanda.realizarNovoChamado();
+                        demanda.getDemanda();
+                    } else {
+                        System.out.println("Demanda com id " + id + " não localizada no sistema.");
+                    }
+                    break;
                 }
                 case 5: {
                     System.out.println("Saindo...");
