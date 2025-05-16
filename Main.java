@@ -5,6 +5,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         ArrayList<Demanda> demandas = new ArrayList<>();
+        boolean atualizadorAtivo = false;
 
         int opcao;
         do {
@@ -20,6 +21,12 @@ public class Main {
             switch (opcao) {
                 case 1: {
                     inserirDemanda(scanner, demandas);
+                    
+                    if (!atualizadorAtivo) {
+                        iniciarAtualizadorDeScore(demandas);
+                        atualizadorAtivo = true;
+                    }
+                    
                     break;
                 }
                 case 2: {
@@ -69,6 +76,7 @@ public class Main {
                     break;
                 }
             }
+            
         } while (opcao != 5);
 
         scanner.close();
@@ -132,5 +140,31 @@ public class Main {
             }
         }
         return null;
+    }
+    
+    private static void iniciarAtualizadorDeScore(ArrayList<Demanda> demandas) {
+    	// Cria a thread
+        Thread thread = new Thread(() -> {
+            long inicio = System.currentTimeMillis();
+
+            while (true) {
+
+                for (Demanda demanda : demandas) {
+                    demanda.calcularScore();
+                }
+
+                long fim = System.currentTimeMillis();
+                int tempo = (int) ((fim - inicio) / 1000); // Converte o tempode ms para segundos
+
+                try {
+                    Thread.sleep(5000); // Delay de 5000ms (5 seg)
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        thread.setDaemon(true); // Faz a thread encerrar junto com o programa setando como Deamon
+        thread.start(); // Executa a thread 
     }
 }

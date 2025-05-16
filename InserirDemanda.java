@@ -38,6 +38,8 @@ public class InserirDemanda {
 
         System.out.print("Status (Espera, Andamento, Finalizado): ");
         String status = scanner.nextLine();
+        
+        scanner.close();
 
         String sql = "INSERT INTO demanda (nome, prioridade, distancia_equipe_sede, distancia_sede_local, distancia_total, custo_reparo, prejuizo_fiscal, tempo_espera, score, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 

@@ -31,7 +31,7 @@ public class Demanda {
         calcularScore();
     }
 
-    private void calcularScore() {
+    public void calcularScore() {
         double custoTotal = custoPecas + custoMaoDeObra + custoPorHoraParada + custoEquipamentos;
         double distanciaTotal = distanciaSede + distanciaVeiculo;
         double pesoRegiao = regiao.equalsIgnoreCase("Rural") ? 1.2 : (regiao.equalsIgnoreCase("Bairro") ? 1.1 : 1.0);
@@ -46,6 +46,10 @@ public class Demanda {
 
     public int getId() {
         return id;
+    }
+    
+    public String getNome() {
+    	return nome;
     }
 
     public double getScore() {

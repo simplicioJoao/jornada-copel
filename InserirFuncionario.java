@@ -22,6 +22,8 @@ public class InserirFuncionario {
 
         System.out.print("Telefone: ");
         String telefone = scanner.nextLine();
+        
+        scanner.close();
 
         String sql = "INSERT INTO funcionarios (nome, cargo, departamento, email, telefone) VALUES (?, ?, ?, ?, ?)";
 
