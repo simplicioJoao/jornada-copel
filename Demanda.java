@@ -1,9 +1,12 @@
 public class Demanda {
-    private int id;
+    private static int contador = 0;
+
+    private String id;
     private String nome;
-    private ClasseDeProblema classeProblema;
-    private double distanciaSede;
-    private double distanciaVeiculo;
+    private TipoDeDemanda tipoDeDemanda;
+    private double distanciaEquipeAteSede;
+    private double distanciaSedeAteLocal;
+    private double distanciaTotal;
     private double custoPecas;
     private double custoMaoDeObra;
     private double custoPorHoraParada;
@@ -12,14 +15,17 @@ public class Demanda {
     private String regiao;
     private double consumoMedio;
     private double score;
+    private long tempoInicioDeslocamento;
 
-    public Demanda(String nome, ClasseDeProblema classeProblema, double distanciaSede, double distanciaVeiculo,
+    public Demanda(String nome, TipoDeDemanda tipoDeDemanda, double distanciaEquipeAteSede, double distanciaSedeAteLocal,
                    double custoPecas, double custoMaoDeObra, double custoPorHoraParada, double custoEquipamentos, String regiao, double consumoMedio) {
 
+        this.id = gerarId();
         this.nome = nome;
-        this.classeProblema = classeProblema;
-        this.distanciaSede = distanciaSede;
-        this.distanciaVeiculo = distanciaVeiculo;
+        this.tipoDeDemanda = tipoDeDemanda;
+        this.distanciaEquipeAteSede = distanciaEquipeAteSede;
+        this.distanciaSedeAteLocal = distanciaSedeAteLocal;
+        this.distanciaTotal = this.distanciaEquipeAteSede + this.distanciaSedeAteLocal;
         this.custoPecas = custoPecas;
         this.custoMaoDeObra = custoMaoDeObra;
         this.custoPorHoraParada = custoPorHoraParada;
@@ -31,21 +37,63 @@ public class Demanda {
         calcularScore();
     }
 
-    private void calcularScore() {
+    public void calcularScore() {
         double custoTotal = custoPecas + custoMaoDeObra + custoPorHoraParada + custoEquipamentos;
-        double distanciaTotal = distanciaSede + distanciaVeiculo;
         double pesoRegiao = regiao.equalsIgnoreCase("Rural") ? 1.2 : (regiao.equalsIgnoreCase("Bairro") ? 1.1 : 1.0);
 
-        this.score = (consumoMedio * 0.4 + recorrencia * 10 + custoTotal * 0.2 - distanciaTotal * 0.1) * pesoRegiao * classeProblema.getPeso();
+        this.score = consumoMedio * 0.4
+                        + recorrencia * 10
+                        + custoTotal * 0.2
+                        + distanciaTotal * 0.1
+                        + tipoDeDemanda.getTempoDeEspera() * 0.3
+                        + tipoDeDemanda.getTempoMedioDeAtendimento() * 0.1
+                        + pesoRegiao + tipoDeDemanda.getPeso();
     }
 
-    public void realizarNovoChamado() {
-        this.recorrencia++;
-        calcularScore();
+    private String gerarId() {
+        contador++;
+        int valor = contador;
+
+        char[] digitos = new char[5];
+        int i = 4;
+
+        while (valor > 0 && i >= 0) {
+            int digito = valor % 10;
+            digitos[i] = (char) ('0' + digito);
+            valor /= 10;
+            i--;
+        }
+
+        while (i >= 0) {
+            digitos[i] = '0';
+            i--;
+        }
+
+        return new String(digitos);
     }
 
-    public int getId() {
+    public String getId() {
         return id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public TipoDeDemanda getTipoDeDemanda() {
+        return tipoDeDemanda;
+    }
+
+    public double getDistanciaTotal() {
+        return distanciaTotal;
+    }
+
+    public int getRecorrencia() {
+        return recorrencia;
+    }
+
+    public void setRecorrencia(int recorrencia) {
+        this.recorrencia = recorrencia;
     }
 
     public double getScore() {
@@ -56,8 +104,16 @@ public class Demanda {
         this.score = score;
     }
 
+    public long getTempoInicioDeslocamento() {
+        return tempoInicioDeslocamento;
+    }
+
+    public void setTempoInicioDeslocamento(long tempoInicioDeslocamento) {
+        this.tempoInicioDeslocamento = tempoInicioDeslocamento;
+    }
+
     public String getDemanda() {
-        return String.format("Demanda: %s | Score: %.2f | Descrição: %s | Região: %s",
-                nome, score, classeProblema.getDescricao(), regiao);
+        return String.format("ID da demanda: %s | Solicitante: %s | Score: %.2f | Tipo: %s | Região: %s | Tempo de espera: %d min",
+                id, nome, score, tipoDeDemanda.getDescricao(), regiao, tipoDeDemanda.getTempoDeEspera());
     }
 }
