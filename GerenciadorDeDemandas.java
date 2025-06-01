@@ -2,6 +2,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class GerenciadorDeDemandas {
+    // Inicia as constantes para mudar a cor do texto
+    // de acordo com a fila que se encontra a demanda
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_BLUE = "\u001B[34m";
     final double VELOCIDADE_KM_POR_HORA = 60.0;
     final double VELOCIDADE_KM_POR_MINUTO = VELOCIDADE_KM_POR_HORA / 60;
 
@@ -83,11 +90,21 @@ public class GerenciadorDeDemandas {
         System.out.println("Demanda com id " + id + " não encontrada na lista de demandas em andamento.");
     }
 
+    // Retorna as filas e suas demandas com as respectivas cores:
+    // Vermelho - em espera
+    // Amarelo - a caminho
+    // Azul - sendo realizadas
+    // Verde - concluídas
+    // Reset - volta a cor normal
     public String exibirListas() {
-        return exibirLista("Demandas em espera", demandasEmEspera)
-                + exibirLista("Demandas com veículo a caminho", demandasACaminho)
-                + exibirLista("Demandas sendo realizadas", demandasSendoRealizadas)
-                + exibirLista("Demandas finalizadas", demandasFinalizadas);
+        String saida = "";
+
+        saida += ANSI_RED + exibirLista("Demandas em espera", demandasEmEspera) + ANSI_RESET;
+        saida += ANSI_YELLOW + exibirLista("Demandas com veículo a caminho", demandasACaminho) + ANSI_RESET;
+        saida += ANSI_BLUE + exibirLista("Demandas sendo realizadas", demandasSendoRealizadas) + ANSI_RESET;
+        saida += ANSI_GREEN + exibirLista("Demandas finalizadas", demandasFinalizadas) + ANSI_RESET;
+
+        return saida;
     }
 
     private String exibirLista(String nome, ArrayList<Demanda> lista) {
