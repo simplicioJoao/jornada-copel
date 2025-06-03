@@ -1,16 +1,14 @@
 import java.util.ArrayList;
-import java.util.Iterator;
+import Veiculo.Veiculo;
 
 public class GerenciadorDeDemandas {
-    // Inicia as constantes para mudar a cor do texto
-    // de acordo com a fila que se encontra a demanda
+    // Inicia as constantes para mudar a cor do texto de acordo com a fila que se encontra a demanda
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_YELLOW = "\u001B[33m";
     public static final String ANSI_BLUE = "\u001B[34m";
-    final double VELOCIDADE_KM_POR_HORA = 60.0;
-    final double VELOCIDADE_KM_POR_MINUTO = VELOCIDADE_KM_POR_HORA / 60;
+
     GerenciadorDeVeiculos gerenciadorDeVeiculos = new GerenciadorDeVeiculos();
 
     ArrayList<Demanda> demandasEmEspera = new ArrayList<>();
