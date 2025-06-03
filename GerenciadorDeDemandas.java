@@ -1,9 +1,9 @@
+import Veiculo.Veiculo;
+
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class GerenciadorDeDemandas {
-    final double VELOCIDADE_KM_POR_HORA = 60.0;
-    final double VELOCIDADE_KM_POR_MINUTO = VELOCIDADE_KM_POR_HORA / 60;
+    GerenciadorDeVeiculos gerenciadorDeVeiculos = new GerenciadorDeVeiculos();
 
     ArrayList<Demanda> demandasEmEspera = new ArrayList<>();
     ArrayList<Demanda> demandasACaminho = new ArrayList<>();
@@ -39,6 +39,7 @@ public class GerenciadorDeDemandas {
             demanda.getTipoDeDemanda().setTempoDeEspera(demanda.getTipoDeDemanda().getTempoDeEspera() + 30);
         }
 
+        moverDeEsperaParaACaminho(tempo);
         moverDeACaminhoParaSendoRealizada(tempo);
 
         for (Demanda d : demandasEmEspera) d.calcularScore();
@@ -48,39 +49,64 @@ public class GerenciadorDeDemandas {
         return tempo;
     }
 
-    public void moverDeACaminhoParaSendoRealizada(long tempo) {
+    public void moverDeEsperaParaACaminho(long tempo) {
         int i = 0;
-        while (i < demandasACaminho.size()) {
-            Demanda demanda = demandasACaminho.get(i);
-            double tempoNecessario = demanda.getDistanciaTotal() / VELOCIDADE_KM_POR_MINUTO;
-            long tempoDecorrido = tempo - demanda.getTempoInicioDeslocamento();
+        while (i < demandasEmEspera.size()) {
+            Demanda d = demandasEmEspera.get(i);
+            String tipoNecessario = d.getTipoDeDemanda().getVeiculoNecessario();
 
-            if (tempoDecorrido >= tempoNecessario) {
-                demandasSendoRealizadas.add(demanda);
-                demandasACaminho.remove(i); // remove e NÃO avança o índice
-                System.out.println("[CHEGOU AO LOCAL] " + demanda.getNome() + " após " + tempoDecorrido + " minutos.");
+            Veiculo veiculo = gerenciadorDeVeiculos.buscarVeiculoDisponivel(tipoNecessario);
+
+            if (veiculo != null) {
+                veiculo.setDisponivel(false);
+                d.setVeiculo(veiculo);
+                d.getVeiculo().setTempoInicioDeslocamento(tempo);
+
+                demandasACaminho.add(d);
+                demandasEmEspera.remove(i);
             } else {
-                i++; // só avança se não remover
+                i++; // tenta próxima demanda
             }
         }
     }
 
-    public void finalizarDemanda(String id) {
+    public void moverDeACaminhoParaSendoRealizada(long tempo) {
+        for (int i = 0; i < demandasACaminho.size(); i++) {
+            Demanda demanda = demandasACaminho.get(i);
+
+            double velocidade = demanda.getVeiculo().getVelocidadeMediaKmPorMinuto();
+            double tempoNecessario = demanda.getDistanciaTotal() / velocidade;
+            long tempoDecorrido = tempo - demanda.getVeiculo().getTempoInicioDeslocamento();
+
+            if (tempoDecorrido >= tempoNecessario) {
+                for (int j = i; j < demandasACaminho.size() - 1; j++) {
+                    demandasACaminho.set(j, demandasACaminho.get(j + 1));
+                }
+                demandasACaminho.remove(demandasACaminho.size() - 1);
+                demandasSendoRealizadas.add(demanda);
+
+                i--; // corrigir índice após remoção
+            }
+        }
+    }
+
+    public String finalizarDemanda(String id) {
         int i = 0;
         while (i < demandasSendoRealizadas.size()) {
             Demanda demanda = demandasSendoRealizadas.get(i);
 
             if (demanda.getId().equals(id)) {
+                demanda.getVeiculo().setDisponivel(true);
+                demanda.setVeiculo(null);
                 demandasFinalizadas.add(demanda);
                 demandasSendoRealizadas.remove(i); // remove e não avança o índice
-                System.out.println("[FINALIZADA] Demanda '" + demanda.getNome() + "' foi finalizada com sucesso.");
-                return;
+                return "Demanda " + demanda.getId() + " [FINALIZADA]";
             }
 
             i++; // só avança se não remover
         }
 
-        System.out.println("Demanda com id " + id + " não encontrada na lista de demandas em andamento.");
+        return "Demanda com id " + id + " não localizada na lista de demandas em andamento.";
     }
 
     public String exibirListas() {
@@ -98,32 +124,5 @@ public class GerenciadorDeDemandas {
             demandas += demanda.getDemanda() + "\n";
         }
         return demandas + "\n";
-    }
-
-    public void iniciarDeslocamento(long tempoAtual) {
-        if (demandasEmEspera.isEmpty()) {
-            System.out.println("Nenhuma demanda na lista de espera para iniciar deslocamento.");
-            return;
-        }
-
-        Demanda demandaComMaiorScore = null;
-        double maiorScore = Double.NEGATIVE_INFINITY;
-
-        for (Demanda d : demandasEmEspera) {
-            if (d.getScore() > maiorScore) {
-                maiorScore = d.getScore();
-                demandaComMaiorScore = d;
-            }
-        }
-
-        if (demandaComMaiorScore != null) {
-            demandaComMaiorScore.setTempoInicioDeslocamento(tempoAtual);
-
-            demandasACaminho.add(demandaComMaiorScore);
-            demandasEmEspera.remove(demandaComMaiorScore);
-
-            System.out.println("[DESLOCAMENTO INICIADO] " + demandaComMaiorScore.getNome() +
-                    " | Score: " + String.format("%.2f", demandaComMaiorScore.getScore()));
-        }
     }
 }

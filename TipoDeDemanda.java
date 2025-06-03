@@ -3,12 +3,18 @@ public class TipoDeDemanda {
     private long tempoDeEspera;
     private long tempoMedioDeAtendimento;
     private double peso;
+    private String veiculoNecessario;
 
-    public TipoDeDemanda(String descricao, double peso, int tempoMedioDeAtendimento) {
+    public TipoDeDemanda(String descricao, double peso, int tempoMedioDeAtendimento, String veiculoNecessario) {
         this.descricao = descricao;
         this.peso = peso;
-        this.tempoDeEspera = 0;
         this.tempoMedioDeAtendimento = tempoMedioDeAtendimento;
+        this.tempoDeEspera = 0;
+        this.veiculoNecessario = veiculoNecessario;
+    }
+
+    public String getVeiculoNecessario() {
+        return veiculoNecessario;
     }
 
     public String getDescricao() {

@@ -1,3 +1,5 @@
+import Veiculo.Veiculo;
+
 public class Demanda {
     private static int contador = 0;
 
@@ -15,7 +17,7 @@ public class Demanda {
     private String regiao;
     private double consumoMedio;
     private double score;
-    private long tempoInicioDeslocamento;
+    private Veiculo veiculo;
 
     public Demanda(String nome, TipoDeDemanda tipoDeDemanda, double distanciaEquipeAteSede, double distanciaSedeAteLocal,
                    double custoPecas, double custoMaoDeObra, double custoPorHoraParada, double custoEquipamentos, String regiao, double consumoMedio) {
@@ -104,16 +106,21 @@ public class Demanda {
         this.score = score;
     }
 
-    public long getTempoInicioDeslocamento() {
-        return tempoInicioDeslocamento;
+    public void setVeiculo(Veiculo veiculo) {
+        this.veiculo = veiculo;
     }
 
-    public void setTempoInicioDeslocamento(long tempoInicioDeslocamento) {
-        this.tempoInicioDeslocamento = tempoInicioDeslocamento;
+    public Veiculo getVeiculo() {
+        return veiculo;
     }
 
     public String getDemanda() {
-        return String.format("ID da demanda: %s | Solicitante: %s | Score: %.2f | Tipo: %s | Região: %s | Tempo de espera: %d min",
-                id, nome, score, tipoDeDemanda.getDescricao(), regiao, tipoDeDemanda.getTempoDeEspera());
+        if(veiculo != null) {
+            return String.format("ID da demanda: %s | Solicitante: %s | Score: %.2f | Tipo: %s | Veículo utilizado: %s | Região: %s | Tempo de espera: %d min",
+                    id, nome, score, tipoDeDemanda.getDescricao(), veiculo.getTipo(), regiao, tipoDeDemanda.getTempoDeEspera());
+        } else {
+            return String.format("ID da demanda: %s | Solicitante: %s | Score: %.2f | Tipo: %s | Região: %s | Tempo de espera: %d min",
+                    id, nome, score, tipoDeDemanda.getDescricao(), regiao, tipoDeDemanda.getTempoDeEspera());
+        }
     }
 }
