@@ -1,14 +1,9 @@
 package Veiculo;
 
-public class Veiculo {
-    protected String tipo;
+public abstract class Veiculo {
     protected double velocidadeMediaKmPorMinuto;
     protected boolean disponivel = true;
     protected long tempoInicioDeslocamento;
-
-    public String getTipo() {
-        return tipo;
-    }
 
     public double getVelocidadeMediaKmPorMinuto() {
         return velocidadeMediaKmPorMinuto;
@@ -30,8 +25,5 @@ public class Veiculo {
         this.tempoInicioDeslocamento = tempoInicioDeslocamento;
     }
 
-    @Override
-    public String toString() {
-        return tipo + " - " + (disponivel ? "Disponível" : "Em uso");
-    }
+    public abstract String getTipo();
 }

@@ -6,6 +6,7 @@ public class Demanda {
     private String id;
     private String nome;
     private TipoDeDemanda tipoDeDemanda;
+    private long tempoDeEspera;
     private double distanciaEquipeAteSede;
     private double distanciaSedeAteLocal;
     private double distanciaTotal;
@@ -25,6 +26,7 @@ public class Demanda {
         this.id = gerarId();
         this.nome = nome;
         this.tipoDeDemanda = tipoDeDemanda;
+        this.tempoDeEspera = 0;
         this.distanciaEquipeAteSede = distanciaEquipeAteSede;
         this.distanciaSedeAteLocal = distanciaSedeAteLocal;
         this.distanciaTotal = this.distanciaEquipeAteSede + this.distanciaSedeAteLocal;
@@ -41,14 +43,13 @@ public class Demanda {
 
     public void calcularScore() {
         double custoTotal = custoPecas + custoMaoDeObra + custoPorHoraParada + custoEquipamentos;
-        double pesoRegiao = regiao.equalsIgnoreCase("Rural") ? 1.2 : (regiao.equalsIgnoreCase("Bairro") ? 1.1 : 1.0);
+        double pesoRegiao = regiao.equalsIgnoreCase("Centro") ? 1.2 : (regiao.equalsIgnoreCase("Bairro") ? 1.1 : 1.0);
 
         this.score = consumoMedio * 0.4
                         + recorrencia * 10
                         + custoTotal * 0.2
                         + distanciaTotal * 0.1
-                        + tipoDeDemanda.getTempoDeEspera() * 0.3
-                        + tipoDeDemanda.getTempoMedioDeAtendimento() * 0.1
+                        + tempoDeEspera * 0.3
                         + pesoRegiao + tipoDeDemanda.getPeso();
     }
 
@@ -57,15 +58,23 @@ public class Demanda {
         int valor = contador;
 
         char[] digitos = new char[5];
+
         int i = 4;
 
+        // enquanto ainda houver dígitos a processar e não tiver preenchido todo o array
         while (valor > 0 && i >= 0) {
+            // pega o último dígito do número (mod 10)
             int digito = valor % 10;
+
+            // converte o número em caractere e coloca na posição correspondente
             digitos[i] = (char) ('0' + digito);
+
+            // remove o último dígito do número
             valor /= 10;
             i--;
         }
 
+        // preenche as posições restantes com '0', caso o número tenha menos de 5 dígitos
         while (i >= 0) {
             digitos[i] = '0';
             i--;
@@ -78,12 +87,16 @@ public class Demanda {
         return id;
     }
 
-    public String getNome() {
-        return nome;
-    }
-
     public TipoDeDemanda getTipoDeDemanda() {
         return tipoDeDemanda;
+    }
+
+    public long getTempoDeEspera() {
+        return tempoDeEspera;
+    }
+
+    public void setTempoDeEspera(long tempoDeEspera) {
+        this.tempoDeEspera = tempoDeEspera;
     }
 
     public double getDistanciaTotal() {
@@ -106,21 +119,24 @@ public class Demanda {
         this.score = score;
     }
 
-    public void setVeiculo(Veiculo veiculo) {
-        this.veiculo = veiculo;
-    }
-
     public Veiculo getVeiculo() {
         return veiculo;
     }
 
+    public void setVeiculo(Veiculo veiculo) {
+        this.veiculo = veiculo;
+    }
+
     public String getDemanda() {
+        // quando houver veículos disponíveis e um veículo relacionado à demanda
         if(veiculo != null) {
             return String.format("ID da demanda: %s | Solicitante: %s | Score: %.2f | Tipo: %s | Veículo utilizado: %s | Região: %s | Tempo de espera: %d min",
-                    id, nome, score, tipoDeDemanda.getDescricao(), veiculo.getTipo(), regiao, tipoDeDemanda.getTempoDeEspera());
-        } else {
+                    id, nome, score, tipoDeDemanda.getDescricao(), veiculo.getTipo(), regiao, tempoDeEspera);
+        }
+        // quando a demanda for finalizada e o veículo que estava relacionado à demanda se tornar null
+        else {
             return String.format("ID da demanda: %s | Solicitante: %s | Score: %.2f | Tipo: %s | Região: %s | Tempo de espera: %d min",
-                    id, nome, score, tipoDeDemanda.getDescricao(), regiao, tipoDeDemanda.getTempoDeEspera());
+                    id, nome, score, tipoDeDemanda.getDescricao(), regiao, tempoDeEspera);
         }
     }
 }

@@ -9,8 +9,6 @@ public class GerenciadorDeDemandas {
     public static final String ANSI_YELLOW = "\u001B[33m";
     public static final String ANSI_BLUE = "\u001B[34m";
 
-    GerenciadorDeVeiculos gerenciadorDeVeiculos = new GerenciadorDeVeiculos();
-
     ArrayList<Demanda> demandasEmEspera = new ArrayList<>();
     ArrayList<Demanda> demandasACaminho = new ArrayList<>();
     ArrayList<Demanda> demandasSendoRealizadas = new ArrayList<>();
@@ -35,19 +33,21 @@ public class GerenciadorDeDemandas {
         demanda.calcularScore();
     }
 
-    public long simularPassagemDeTempo(long tempo) {
+    public long simularPassagemDeTempo(long tempo, GerenciadorDeVeiculos gerenciadorDeVeiculos) {
         tempo += 30;
 
+        // adiciona 30 minutos ao tempo de espera das demandas das listas de demandas em espera e de demandas com veículo a caminho
         for(Demanda demanda : demandasEmEspera) {
-            demanda.getTipoDeDemanda().setTempoDeEspera(demanda.getTipoDeDemanda().getTempoDeEspera() + 30);
+            demanda.setTempoDeEspera(demanda.getTempoDeEspera() + 30);
         }
         for(Demanda demanda : demandasACaminho) {
-            demanda.getTipoDeDemanda().setTempoDeEspera(demanda.getTipoDeDemanda().getTempoDeEspera() + 30);
+            demanda.setTempoDeEspera(demanda.getTempoDeEspera() + 30);
         }
 
-        moverDeEsperaParaACaminho(tempo);
+        moverDeEsperaParaACaminho(tempo, gerenciadorDeVeiculos);
         moverDeACaminhoParaSendoRealizada(tempo);
 
+        // atualiza o score de todas as demandas após a passagem do tempo
         for (Demanda d : demandasEmEspera) d.calcularScore();
         for (Demanda d : demandasACaminho) d.calcularScore();
         for (Demanda d : demandasSendoRealizadas) d.calcularScore();
@@ -55,23 +55,26 @@ public class GerenciadorDeDemandas {
         return tempo;
     }
 
-    public void moverDeEsperaParaACaminho(long tempo) {
+    public void moverDeEsperaParaACaminho(long tempo, GerenciadorDeVeiculos gerenciadorDeVeiculos) {
         int i = 0;
         while (i < demandasEmEspera.size()) {
             Demanda d = demandasEmEspera.get(i);
             String tipoNecessario = d.getTipoDeDemanda().getVeiculoNecessario();
 
+            // verifica se há veículo disponível para realizar a demanda
             Veiculo veiculo = gerenciadorDeVeiculos.buscarVeiculoDisponivel(tipoNecessario);
 
             if (veiculo != null) {
+                // se houver veículo disponível, então altera o atributo disponivel para false e atribui o veículo encontrado à demanda atual
                 veiculo.setDisponivel(false);
                 d.setVeiculo(veiculo);
                 d.getVeiculo().setTempoInicioDeslocamento(tempo);
 
+                // move da lista de demandas em espera para a lista de demandas com veículo a caminho
                 demandasACaminho.add(d);
                 demandasEmEspera.remove(i);
             } else {
-                i++; // tenta próxima demanda
+                i++; // só passa para o próximo índice se não remover uma demanda da lista de demandas em espera
             }
         }
     }
@@ -84,14 +87,12 @@ public class GerenciadorDeDemandas {
             double tempoNecessario = demanda.getDistanciaTotal() / velocidade;
             long tempoDecorrido = tempo - demanda.getVeiculo().getTempoInicioDeslocamento();
 
+            // se o tempo decorrido for maior que o tempo necessário para o deslocamento do veículo, então move a demanda para a lista de demandas sendo realizadas
             if (tempoDecorrido >= tempoNecessario) {
-                for (int j = i; j < demandasACaminho.size() - 1; j++) {
-                    demandasACaminho.set(j, demandasACaminho.get(j + 1));
-                }
-                demandasACaminho.remove(demandasACaminho.size() - 1);
                 demandasSendoRealizadas.add(demanda);
+                demandasACaminho.remove(i);
 
-                i--; // corrigir índice após remoção
+                i--; // corrige o índice após remoção
             }
         }
     }
@@ -101,6 +102,7 @@ public class GerenciadorDeDemandas {
         while (i < demandasSendoRealizadas.size()) {
             Demanda demanda = demandasSendoRealizadas.get(i);
 
+            // se encontrar uma demanda com o id informado, então disponibiliza o veículo novamente e o desvincula da demanda
             if (demanda.getId().equals(id)) {
                 demanda.getVeiculo().setDisponivel(true);
                 demanda.setVeiculo(null);

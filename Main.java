@@ -9,6 +9,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         GerenciadorDeDemandas gerenciadorDeDemandas = new GerenciadorDeDemandas();
+        GerenciadorDeVeiculos gerenciadorDeVeiculos = new GerenciadorDeVeiculos();
 
         long tempo = 0;
         int opcao;
@@ -27,7 +28,7 @@ public class Main {
 
             switch (opcao) {
                 case 1: {
-                    if(gerenciadorDeDemandas.gerenciadorDeVeiculos.veiculos.isEmpty()) {
+                    if(gerenciadorDeVeiculos.veiculos.isEmpty()) {
                         System.out.println("Não há veículos cadastrados na frota no momento.");
                     } else {
                         System.out.print("Nome do solicitante: ");
@@ -44,30 +45,30 @@ public class Main {
                         TipoDeDemanda tipoDeDemanda = null;
                         switch (tipo) {
                             case 1:
-                                tipoDeDemanda = new TipoDeDemanda("Troca de Transformador", 5.0, 60, "Caminhão");
+                                tipoDeDemanda = new TipoDeDemanda("Troca de Transformador", 5.0, "Caminhão");
                                 break;
                             case 2:
-                                tipoDeDemanda = new TipoDeDemanda("Troca de Fiação", 4.0, 45, "Caminhonete");
+                                tipoDeDemanda = new TipoDeDemanda("Troca de Fiação", 4.0, "Caminhonete");
                                 break;
                             case 3:
-                                tipoDeDemanda = new TipoDeDemanda("Queda de Energia", 3.5, 30, "Carro");
+                                tipoDeDemanda = new TipoDeDemanda("Queda de Energia", 3.5, "Carro");
                                 break;
                             case 4:
-                                tipoDeDemanda = new TipoDeDemanda("Curto-circuito", 3.0, 40, "Carro");
+                                tipoDeDemanda = new TipoDeDemanda("Curto-circuito", 3.0, "Carro");
                                 break;
                             case 5:
-                                tipoDeDemanda = new TipoDeDemanda("Instalação de Novo Ponto", 2.0, 50, "caminhonete");
+                                tipoDeDemanda = new TipoDeDemanda("Instalação de Novo Ponto", 2.0, "caminhonete");
                                 break;
                             default:
                                 System.out.println("Tipo inválido.");
                                 break;
                         }
 
-                        System.out.print("Distância até a sede (km): ");
-                        double distanciaSede = Double.parseDouble(scanner.nextLine());
+                        System.out.print("Distância da equipe até a sede (km): ");
+                        double distanciaEquipeAteSede = Double.parseDouble(scanner.nextLine());
 
-                        System.out.print("Distância do veículo (km): ");
-                        double distanciaVeiculo = Double.parseDouble(scanner.nextLine());
+                        System.out.print("Distância da sede até o local da demanda (km): ");
+                        double distanciaSedeAteLocal = Double.parseDouble(scanner.nextLine());
 
                         System.out.print("Custo de peças (R$): ");
                         double custoPecas = Double.parseDouble(scanner.nextLine());
@@ -81,13 +82,14 @@ public class Main {
                         System.out.print("Custo de equipamentos (R$): ");
                         double custoEquipamentos = Double.parseDouble(scanner.nextLine());
 
-                        System.out.print("Região (1-Centro, 2-Bairro, 3-Rural): ");
+                        // aqui tem uma parte que eu mudei pelo notebook, juntar depois
+                        System.out.print("Região (1 - Centro, 2 - Bairro, 3 - Rural): ");
                         String regiao = scanner.nextLine();
 
                         System.out.print("Consumo médio da região (GW/h): ");
                         double consumoMedio = Double.parseDouble(scanner.nextLine());
 
-                        Demanda demanda = new Demanda(nome, tipoDeDemanda, distanciaSede, distanciaVeiculo, custoPecas, custoMaoDeObra, custoPorHoraParada, custoEquipamentos, regiao, consumoMedio);
+                        Demanda demanda = new Demanda(nome, tipoDeDemanda, distanciaEquipeAteSede, distanciaSedeAteLocal, custoPecas, custoMaoDeObra, custoPorHoraParada, custoEquipamentos, regiao, consumoMedio);
 
                         boolean criouDemanda = gerenciadorDeDemandas.inserirDemanda(demanda);
 
@@ -132,7 +134,7 @@ public class Main {
                     break;
                 }
                 case 5: {
-                    tempo = gerenciadorDeDemandas.simularPassagemDeTempo(tempo);
+                    tempo = gerenciadorDeDemandas.simularPassagemDeTempo(tempo, gerenciadorDeVeiculos);
                     System.out.println("Tempo atual: " + tempo + " minutos");
                     System.out.println(gerenciadorDeDemandas.exibirListas());
                     break;
@@ -145,6 +147,8 @@ public class Main {
                 }
                 case 7: {
                     int opcaoVeiculo = 0;
+                    Veiculo veiculo = null;
+
                     do {
                         System.out.println("1 - Carro");
                         System.out.println("2 - Caminhonete");
@@ -155,18 +159,18 @@ public class Main {
 
                         switch (opcaoVeiculo) {
                             case 1: {
-                                Veiculo veiculo = new Carro();
-                                gerenciadorDeDemandas.gerenciadorDeVeiculos.adicionarVeiculo(veiculo);
+                                veiculo = new Carro();
+                                gerenciadorDeVeiculos.adicionarVeiculo(veiculo);
                                 break;
                             }
                             case 2: {
-                                Veiculo veiculo = new Caminhonete();
-                                gerenciadorDeDemandas.gerenciadorDeVeiculos.adicionarVeiculo(veiculo);
+                                veiculo = new Caminhonete();
+                                gerenciadorDeVeiculos.adicionarVeiculo(veiculo);
                                 break;
                             }
                             case 3: {
-                                Veiculo veiculo = new Caminhao();
-                                gerenciadorDeDemandas.gerenciadorDeVeiculos.adicionarVeiculo(veiculo);
+                                veiculo = new Caminhao();
+                                gerenciadorDeVeiculos.adicionarVeiculo(veiculo);
                                 break;
                             }
                             default: {
@@ -175,7 +179,7 @@ public class Main {
                             }
                         }
                     } while(opcaoVeiculo < 1 || opcaoVeiculo > 3);
-                    System.out.println("Veículo adicionado à frota com sucesso.");
+                    System.out.println(veiculo.getTipo() + " adicionado à frota com sucesso.");
                     break;
                 }
                 case 8: {
